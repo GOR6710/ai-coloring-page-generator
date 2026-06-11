@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String   @id @default(uuid())
+  email            String?  @unique
+  name             String?
+  subscriptionTier String   @default("free") @map("subscription_tier")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  coloringPages ColoringPage[]
+  quotas        UsageQuota[]
+
+  @@map("users")
+}
+
+model ColoringPage {
+  id           String   @id @default(uuid())
+  userId       String?  @map("user_id")
+  prompt       String
+  style        String   @default("cartoon")
+  difficulty   String   @default("medium")
+  imageUrl     String?  @map("image_url")
+  thumbnailUrl String?  @map("thumbnail_url")
+  isPublic     Boolean  @default(true) @map("is_public")
+  likes        Int      @default(0)
+  sessionId    String?  @map("session_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("coloring_pages")
+}
+
+model UsageQuota {
+  id              String @id @default(uuid())
+  userId          String @map("user_id")
+  month           String
+  pagesGenerated  Int    @default(0) @map("pages_generated")
+  generationLimit Int    @default(5) @map("generation_limit")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, month])
+  @@map("usage_quotas")
+}
