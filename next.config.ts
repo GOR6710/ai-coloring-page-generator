@@ -1,15 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: ["@prisma/client", "prisma"],
   images: {
     remotePatterns: [
       {
         protocol: "https",
         hostname: "oaidalleapiprodscus.blob.core.windows.net",
-      },
-      {
-        protocol: "https",
-        hostname: "*.openai.com",
       },
     ],
   },
